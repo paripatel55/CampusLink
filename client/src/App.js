@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import LandingPage from "./LandingPage/LandingPage";
-import HangoutRequestForm from "./HangoutRequestForm";
-// import HangoutRequestsList from "./HangoutRequestsList";
+import LandingPage from "./components/LandingPage/LandingPage";
+import HangoutRequestForm from "./components/HangoutRequestForm/HangoutRequestForm";
+// import HangoutRequestsList from "./components/HangoutRequestsList/HangoutRequestsList";
 import './App.css';
-import './HangoutRequests.css';
 
 export default function App() {
   const [user, setUser] = useState(null);
