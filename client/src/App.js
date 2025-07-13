@@ -1,23 +1,20 @@
-import logo from './logo.svg';
 import './App.css';
+import './HangoutRequests.css';
+import HangoutRequestForm from './HangoutRequestForm';
+// import HangoutRequestsList from './HangoutRequestsList';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header className="app-header">
+        <h1>CampusLink</h1>
+        <p>Find study buddies and hangout partners nearby!</p>
       </header>
+      
+      <main className="app-main">
+        <HangoutRequestForm />
+        {/* <HangoutRequestsList /> */}
+      </main>
     </div>
   );
 }
