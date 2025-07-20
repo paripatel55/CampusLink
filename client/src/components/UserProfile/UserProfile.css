@@ -1,0 +1,157 @@
+/* Main Container */
+.profile-container {
+  max-width: 935px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #262626;
+  background-color: #fafafa;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.profile-header {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Picture Container */
+.profile-picture-container {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.profile-picture {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #dbdbdb;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.profile-picture:hover {
+  filter: brightness(0.9);
+}
+
+.uploading-text {
+  font-size: 14px;
+  color: #0095f6;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* Profile Info */
+.profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-top-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-username {
+  font-size: 28px;
+  font-weight: 300;
+  color: #262626;
+}
+
+.edit-profile-btn {
+  padding: 7px 16px;
+  border: 1px solid #dbdbdb;
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  transition: all 0.2s ease;
+}
+
+.edit-profile-btn:hover {
+  background-color: #fafafa;
+}
+
+/* Stats */
+.profile-stats {
+  display: flex;
+  gap: 40px;
+}
+
+.stat-item {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Bio Section */
+.profile-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.profile-details {
+  font-size: 14px;
+  color: #262626;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.profile-interests {
+  font-size: 14px;
+  color: #262626;
+  margin-top: 4px;
+}
+
+/* Smaller screens */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 16px;
+  }
+  
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+    padding: 20px;
+  }
+  
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .profile-top-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .profile-username {
+    font-size: 24px;
+  }
+  
+  .profile-stats {
+    justify-content: center;
+    gap: 24px;
+  }
+}

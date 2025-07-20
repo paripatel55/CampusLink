@@ -71,6 +71,7 @@ export default function SignUp({ onGoToSignIn }) {
         isCheckedIn: false,
         currentLocation: null,
         createdAt: serverTimestamp(),
+        photoURL: "/default-profile-pic.png",
       });
 
       // send email verification
