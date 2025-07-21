@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import LandingPage from "./components/LandingPage/LandingPage";
 import HangoutRequestForm from "./components/HangoutRequestForm/HangoutRequestForm";
-// import HangoutRequestsList from "./components/HangoutRequestsList/HangoutRequestsList";
+import HangoutRequestsList from "./components/HangoutRequestsList/HangoutRequestsList";
 import './App.css';
 
 export default function App() {
@@ -25,7 +25,7 @@ export default function App() {
 
       <main className="app-main">
         <HangoutRequestForm />
-        {/* <HangoutRequestsList /> */}
+        <HangoutRequestsList />
       </main>
     </div>
   );
