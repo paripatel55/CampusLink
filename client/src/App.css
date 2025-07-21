@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+
+.app-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.app-nav button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.app-nav button.active {
+  background: #007bff;
+  color: white;
+}
