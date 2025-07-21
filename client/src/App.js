@@ -3,7 +3,7 @@ import LandingPage from "./components/LandingPage/LandingPage";
 import HangoutRequestForm from "./components/HangoutRequestForm/HangoutRequestForm";
 import ProfileSetup from "./components/ProfileSetup/ProfileSetup";
 import UserProfile from "./components/UserProfile/UserProfile";
-// import HangoutRequestsList from "./components/HangoutRequestsList/HangoutRequestsList";
+import HangoutRequestsList from "./components/HangoutRequestsList/HangoutRequestsList";
 import './App.css';
 
 export default function App() {
@@ -56,7 +56,7 @@ export default function App() {
     </nav>
 
     <main className="app-main">
-      {activePage === "hangout" && <HangoutRequestForm />}
+      {activePage === "hangout" && <HangourRequestList /> && <HangoutRequestForm />}
       {activePage === "profile" && <UserProfile user={user} />}
     </main>
   </div>

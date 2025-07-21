@@ -23,14 +23,13 @@ const HangoutRequestForm = () => {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    if (window.google && window.google.maps) { return; } // check if Google Maps is already loaded
+    if (window.google && window.google.maps) { return; }
 
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places,geometry`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places`;
     script.async = true;
     
     script.onload = () => {
-      // Google Maps is now loaded and ready to use
       console.log('Google Maps API loaded successfully');
     };
     
@@ -45,10 +44,8 @@ const HangoutRequestForm = () => {
     setIsGettingLocation(true);
     setMessage("Getting your location...");
     
-    // Use browser's geolocation (more accurate than IP-based) -> if move to mobile can use geolocator w cell towers
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        // Success - got coordinates from browser
         (position) => {
           const { latitude, longitude } = position.coords;
           
@@ -64,33 +61,56 @@ const HangoutRequestForm = () => {
                 longitude,
                 location: results[0].formatted_address
               }));
-              setSearchInput(""); // Clear search input when auto-detect works
-              setMessage("📍 Location detected successfully!");
+              setSearchInput(""); // Clear search input
+              setMessage(`📍 Location detected successfully!`);
             } else {
-              setMessage("❌ Location access failed. Please search manually below.");
+              console.error('Geocoding failed:', status);
+              setFormData(prev => ({
+                ...prev,
+                latitude,
+                longitude,
+                location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+              }));
+              setMessage(`📍 Location detected`);
             }
             setIsGettingLocation(false);
           });
         },
-        // Error - browser geolocation failed
         (error) => {
-          setMessage("❌ Location access denied. Please search manually below.");
+          console.error("Geolocation error:", error);
+          let errorMessage = "❌ ";
+          
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += "Location access denied. Please enable location permissions and try again.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += "Location information unavailable. Please try again or search manually.";
+              break;
+            case error.TIMEOUT:
+              errorMessage += "Location request timed out. Please try again or search manually.";
+              break;
+            default:
+              errorMessage += "Location access failed. Please search manually below.";
+              break;
+          }
+          
+          setMessage(errorMessage);
           setIsGettingLocation(false);
         },
-        // Options for high accuracy
+        // High precision geolocation options
         {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000 // 5 minutes cache
+          enableHighAccuracy: true,      // Use GPS if available (mobile)
+          timeout: 30000,                // Wait up to 30 seconds for precise location
+          maximumAge: 60000              // Use cached location if less than 1 minute old
         }
       );
     } else {
-      setMessage("❌ Location not supported by browser. Please search manually below.");
+      setMessage("❌ Location not supported by this browser. Please search manually below.");
       setIsGettingLocation(false);
     }
   };
 
-  // Function to handle manual location input with Places API
   const handleLocationSearch = (inputValue) => {
     setSearchInput(inputValue);
     setSearchResults([]);
@@ -102,7 +122,7 @@ const HangoutRequestForm = () => {
       query: inputValue
     }, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-        setSearchResults(results.slice(0, 5));
+        setSearchResults(results.slice(0, 5)); // Limit to first 5 results
       } else {
         setSearchResults([]);
       }
@@ -111,20 +131,25 @@ const HangoutRequestForm = () => {
   };
 
   const selectPlace = (place) => {
-    const latitude = place.geometry.location.lat();
-    const longitude = place.geometry.location.lng();
+    try {
+      const latitude = place.geometry.location.lat();
+      const longitude = place.geometry.location.lng();
 
-    setFormData(prev => ({
-      ...prev,
-      location: place.formatted_address,
-      latitude,
-      longitude
-    }));
+      setFormData(prev => ({
+        ...prev,
+        location: place.formatted_address,
+        latitude,
+        longitude
+      }));
 
-    setSearchResults([]);
-    setSearchInput("");
-    setMessage("📍 Location selected!");
-  }
+      setSearchResults([]);
+      setSearchInput("");
+      setMessage("📍 Location selected!");
+    } catch (error) {
+      console.error('Error selecting place:', error);
+      setMessage("Error selecting location. Please try again.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -134,10 +159,6 @@ const HangoutRequestForm = () => {
       const expireTime = new Date();
       expireTime.setMinutes(expireTime.getMinutes() + formData.duration);
 
-      /* TODO: maybe add information about person creating request as metadata 
-        so requests do not reappear on their side / have a special box for
-        your own request? */
-
       const hangoutRequest = {
         summary: formData.summary,
         duration: formData.duration,
@@ -145,17 +166,17 @@ const HangoutRequestForm = () => {
         latitude: formData.latitude,
         longitude: formData.longitude,
         locationDetails: formData.locationDetails,
-
         createdAt: serverTimestamp(),
         expiresAt: expireTime,
         status: "active"
       };
 
       await addDoc(collection(db, 'hangoutRequests'), hangoutRequest);
-      setMessage("Succesfully posted request")
+      setMessage("Successfully posted request!");
       setFormData(initialFormData);
+      setSearchInput("");
     } catch (error) {
-      setMessage("Error: Failed to post request - " + error.message)
+      setMessage("Error: Failed to post request - " + error.message);
     } finally {
       setSubmitting(false);
     }
@@ -165,15 +186,13 @@ const HangoutRequestForm = () => {
     <div className="hangout-form-container">
       <h2>Create Hangout Request</h2>
       
-      {/* Show success/error messages */}
       {message && (
-        <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
+        <div className={`message ${message.includes('Error') || message.includes('❌') ? 'error' : 'success'}`}>
           {message}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="hangout-form">
-        {/* Summary textarea field */}
         <div className="form-group">
           <label htmlFor="summary">What do you want to do?</label>
           <textarea
@@ -185,7 +204,6 @@ const HangoutRequestForm = () => {
           />
         </div>
 
-        {/* Duration select field */}
         <div className="form-group">
           <label htmlFor="duration">Duration</label>
           <select
@@ -204,11 +222,9 @@ const HangoutRequestForm = () => {
           </select>
         </div>
 
-        {/* Location section with two options */}
         <div className="form-group">
           <label>Location *</label>
           
-          {/* Option 1: Auto-detect current location */}
           <button 
             type="button"
             onClick={handleGetLocation}
@@ -220,7 +236,6 @@ const HangoutRequestForm = () => {
           
           <div className="location-divider">— OR —</div>
           
-          {/* Option 2: Manual location search with Places API */}
           <div className="search-container">
             <input
               type="text"
@@ -230,12 +245,10 @@ const HangoutRequestForm = () => {
               className="location-search-input"
             />
             
-            {/* Loading state */}
             {isSearching && (
               <div className="search-loading">Searching...</div>
             )}
             
-            {/* Search results dropdown */}
             {searchResults.length > 0 && (
               <div className="search-results-dropdown">
                 {searchResults.map((place, index) => (
@@ -253,7 +266,6 @@ const HangoutRequestForm = () => {
             )}
           </div>
           
-          {/* Show selected location */}
           {formData.location && (
             <div className="location-display">
               <strong>📍 Selected Location: {formData.location}</strong>
@@ -261,7 +273,6 @@ const HangoutRequestForm = () => {
           )}
         </div>
 
-        {/* Location details textarea field */}
         <div className="form-group">
           <label htmlFor="locationDetails">Location specific details</label>
           <textarea
@@ -272,7 +283,6 @@ const HangoutRequestForm = () => {
           />
         </div>
         
-        {/* Submit button */}
         <button 
           type="submit" 
           disabled={isSubmitting || !formData.location || !formData.summary.trim()}
@@ -281,7 +291,6 @@ const HangoutRequestForm = () => {
           {isSubmitting ? 'Posting...' : 'Post Hangout Request'}
         </button>
         
-        {/* Show requirement messages */}
         {(!formData.summary.trim() || !formData.location) && (
           <div className="requirement-messages">
             {!formData.summary.trim() && (
