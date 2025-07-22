@@ -56,7 +56,12 @@ export default function App() {
     </nav>
 
     <main className="app-main">
-      {activePage === "hangout" && <HangourRequestList /> && <HangoutRequestForm />}
+      {activePage === "hangout" && (
+      <>
+        <HangoutRequestsList />
+        <HangoutRequestForm />
+      </>
+      )}
       {activePage === "profile" && <UserProfile user={user} />}
     </main>
   </div>
