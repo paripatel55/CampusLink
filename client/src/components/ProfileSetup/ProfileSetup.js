@@ -16,8 +16,8 @@ export default function ProfileSetup({ user, onComplete }) {
     setIsSaving(true);
     setError("");
 
-    if (!name || !username) {
-        setError("Name and username are required.");
+    if (!name || !username || !schoolYear) {
+        setError("Name, username, and school year are required.");
         setIsSaving(false);
         return;
     }
@@ -60,7 +60,7 @@ export default function ProfileSetup({ user, onComplete }) {
             name,
             username,
             interests: interests.split(",").map((i) => i.trim()),
-            schoolYear: user.schoolYear || "Freshman",
+            schoolYear: schoolYear,
             needsProfile: false,
         });
 

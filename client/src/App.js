@@ -4,6 +4,7 @@ import HangoutRequestForm from "./components/HangoutRequestForm/HangoutRequestFo
 import ProfileSetup from "./components/ProfileSetup/ProfileSetup";
 import UserProfile from "./components/UserProfile/UserProfile";
 import HangoutRequestsList from "./components/HangoutRequestsList/HangoutRequestsList";
+import UserSearch from "./components/UserSearch/UserSearch";
 import './App.css';
 
 export default function App() {
@@ -53,6 +54,12 @@ export default function App() {
       >
         Profile
       </button>
+      <button
+        className={activePage === "search" ? "active" : ""}
+        onClick={() => setActivePage("search")}
+      >
+        Search
+      </button>
     </nav>
 
     <main className="app-main">
@@ -63,6 +70,7 @@ export default function App() {
       </>
       )}
       {activePage === "profile" && <UserProfile user={user} />}
+      {activePage === "search" && <UserSearch />}
     </main>
   </div>
 );
