@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import "./UserSearch.css";
 
 export default function UserSearch() {
     const [school, setSchool] = useState("NYU");  
@@ -70,7 +71,7 @@ export default function UserSearch() {
 
         <input
             type="text"
-            placeholder="Interests (comma separated)"
+            placeholder="Interests"
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
             style={{ marginRight: 8 }}

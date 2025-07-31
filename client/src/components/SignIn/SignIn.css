@@ -12,13 +12,14 @@ form {
 form h2 {
   margin-bottom: 20px;
   text-align: center;
+  color: #000;
 }
 
 form input {
   margin-bottom: 16px;
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid black;
   border-radius: 4px;
 }
 
