@@ -1,10 +1,15 @@
 /* global google */
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebaseConfig';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import './HangoutRequests.css';
 
-const HangoutRequestForm = () => {
+const HangoutRequestForm = ({ user }) => {
+  // Debug: Log user prop when component loads
+  console.log("HangoutRequestForm received user:", user);
+
+  const [profile, setProfile] = useState(null); // Add this for complete profile data
+
   const initialFormData = {
       summary: "",
       duration: 15,
@@ -21,6 +26,20 @@ const HangoutRequestForm = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+
+  // Fetch user profile data (same as UserProfile component)
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) return;
+      const userRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        setProfile(docSnap.data());
+        console.log("Fetched profile data:", docSnap.data());
+      }
+    }
+    fetchProfile();
+  }, [user]);
 
   useEffect(() => {
     if (window.google && window.google.maps) { return; }
@@ -153,9 +172,21 @@ const HangoutRequestForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if profile is loaded and has username
+    if (!profile || !profile.username) {
+      setMessage("❌ Please complete your profile setup before creating requests.");
+      return;
+    }
+    
     setSubmitting(true);
 
     try {
+      // Debug: Log the profile object to see what's available
+      console.log("Profile object:", profile);
+      console.log("profile.username:", profile.username);
+      console.log("user.email:", user.email);
+
       const expireTime = new Date();
       expireTime.setMinutes(expireTime.getMinutes() + formData.duration);
 
@@ -166,21 +197,37 @@ const HangoutRequestForm = () => {
         latitude: formData.latitude,
         longitude: formData.longitude,
         locationDetails: formData.locationDetails,
+        createdBy: profile.username, // Use profile.username instead of user.username
+        createdByEmail: user.email,
         createdAt: serverTimestamp(),
         expiresAt: expireTime,
         status: "active"
       };
+
+      // Debug: Log the hangout request object before sending
+      console.log("Hangout request to be saved:", hangoutRequest);
 
       await addDoc(collection(db, 'hangoutRequests'), hangoutRequest);
       setMessage("Successfully posted request!");
       setFormData(initialFormData);
       setSearchInput("");
     } catch (error) {
+      console.error("Full error details:", error);
+      console.error("Error message:", error.message);
       setMessage("Error: Failed to post request - " + error.message);
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Show loading if profile not loaded yet
+  if (!profile) {
+    return (
+      <div className="hangout-form-container">
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="hangout-form-container">

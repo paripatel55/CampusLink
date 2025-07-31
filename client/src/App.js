@@ -64,10 +64,10 @@ export default function App() {
 
     <main className="app-main">
       {activePage === "hangout" && (
-      <>
-        <HangoutRequestsList />
-        <HangoutRequestForm />
-      </>
+        <>
+          <HangoutRequestForm user={user} />
+          <HangoutRequestsList user={user} />
+        </>
       )}
       {activePage === "profile" && <UserProfile user={user} />}
       {activePage === "search" && <UserSearch />}
