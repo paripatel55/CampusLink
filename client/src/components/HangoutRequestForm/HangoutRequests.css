@@ -17,6 +17,16 @@ h1, h2, h3, h4, p, span, label {
   margin-bottom: 15px;
 }
 
+.request-location,
+.request-location span,
+.request-meta,
+.request-meta p,
+.request-details,
+.request-details p,
+.request-details strong {
+  color: black !important;
+}
+
 /* Inside white containers: override to black text */
 .form-group label,
 .form-group input,
@@ -246,5 +256,6 @@ h1, h2, h3, h4, p, span, label {
   .search-result-item small {
     font-size: 11px;
   }
+
 }
 
